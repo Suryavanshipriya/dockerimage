@@ -1,0 +1,25 @@
+name: Build and Push NGINX Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_IMAGE_USERNAME }}
+          password: ${{ secrets.DOCKER_IMAGE_SECRETTOKEN }}
+
+      - name: Build and push NGINX Docker image
+        run: |
+          docker build -t priyankasuryavanshi/nginx-image:latest .
+          docker push priyankasuryavanshi/nginx-image:latest

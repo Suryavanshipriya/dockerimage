@@ -6,20 +6,18 @@ on:
       - main
 
 jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_IMAGE_USERNAME }}
-          password: ${{ secrets.DOCKER_IMAGE_SECRETTOKEN }}
-
-      - name: Build and push NGINX Docker image
-        run: |
-          docker build -t priyankasuryavanshi/nginx-image:latest .
-          docker push priyankasuryavanshi/nginx-image:latest
+  build: 
+     runs-on: ubuntu_latest
+     steps:
+        - uses: actions/checkout@v3
+        - name: Run a one-line script
+          run: "echo Hello, World"
+        - name: Login to my Docker Hub
+          uses: docker/login-action@v3
+          with:
+            username: ${{ secrets.DOCKER_IMAGE_USERNAME }}
+            password: ${{ secrets.DOCKER_IMAGE_SECRETTOKEN }}
+        - name: Build docker image
+          run: docker build . -t ${{secrets.DOCKER_IMAGE_USERNAME}}/task1:latest
+        - name: Push docker image to Docker hub
+          run: docker push ${{secrets.DOCKER_IMAGE_USERNAME}}/task1:latest

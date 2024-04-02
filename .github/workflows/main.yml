@@ -5,7 +5,7 @@ on:
   pull_request:
      branches: ["main"]
 jobs:
-  build: 
+ push-to-dockerhub: 
      runs-on: self-hosted
      steps:
         - uses: actions/checkout@v3
@@ -20,3 +20,29 @@ jobs:
           run: docker build . -t ${{secrets.DOCKER_USERNAME}}/task1:latest
         - name: Push docker image to Docker hub
           run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
+ push-to-ecr:
+       
+       runs-on: self-hosted
+       steps:
+  
+        - name: Checkout repo
+          uses: actions/checkout@v3
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4 
+          with:
+           aws-access-key-id: ${{secrets.AKIA4TWKQEDUORMQ4QIG}}
+           aws-secret-access-key: ${{secrets.n6P23KveQffI+jlsbQgeBvRQs0nmy27iDYGEljlH}}
+           aws-region: us-west-2
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v2
+
+        - name: Build, tag, and push docker image to Amazon ECR
+          id: build-image
+          env:
+              REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+              REPOSITORY: github-priya
+              IMAGE_TAG: ${{ github.priya }}
+          run: 
+                docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG

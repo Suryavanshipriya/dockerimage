@@ -42,11 +42,11 @@ jobs:
           AWS_REGISTRY_URL: ${{ secrets.AWS_REGISTRY_URL }}
 
       - name: Build Docker image
-        run: |
+        run: 
           docker build -t ${{ secrets.AWS_REGISTRY_URL }}:${{ github.sha }} .
           docker tag ${{ secrets.AWS_REGISTRY_URL }}:${{ github.sha }} ${{ secrets.AWS_REGISTRY_URL }}:latest
 
       - name: Push Docker image to ECR
-        run: |
+        run: 
           docker push ${{ secrets.AWS_REGISTRY_URL }}:${{ github.sha }}
           docker push ${{ secrets.AWS_REGISTRY_URL }}:latest

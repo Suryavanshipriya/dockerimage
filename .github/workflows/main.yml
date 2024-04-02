@@ -21,28 +21,22 @@ jobs:
         - name: Push docker image to Docker hub
           run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
  push-to-ecr:
-       
-       runs-on: self-hosted
-       steps:
-  
-        - name: Checkout repo
-          uses: actions/checkout@v3
-        - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v4 
-          with:
-           aws-access-key-id: ${{secrets.AWS_ACCESS_KEY}}
-           aws-secret-access-key: ${{secrets.AWS_SECRET_KEY}}
-           aws-region: us-west-2
-        - name: Login to Amazon ECR
-          id: login-ecr
-          uses: aws-actions/amazon-ecr-login@v2
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-        - name: Build, tag, and push docker image to Amazon ECR
-          id: build-image
-          env:
-              REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-              REPOSITORY: github-priya
-              IMAGE_TAG: ${{ github.priya }}
-          run: 
-                docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
-                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry: ${{ secrets.AWS_REGISTRY_URL }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.AWS_REGISTRY_URL }}:${{ github.sha }} .
+          docker push ${{ secrets.AWS_REGISTRY_URL }}:${{ github.sha }}
+        env:
+          AWS_REGISTRY_URL: ${{ secrets.AWS_REGISTRY_URL }}

@@ -10,7 +10,7 @@ jobs:
      steps:
         - uses: actions/checkout@v3
         - name: Run a one-line script
-          run: "echo Hello,  World"
+          run: "echo Hello,World"
         - name: Login to my Docker Hub
           uses: docker/login-action@v3
           with:

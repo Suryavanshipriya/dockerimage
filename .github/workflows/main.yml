@@ -11,7 +11,7 @@ on:
 
 jobs:
   push-to-dockerhub:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Run a one-line script
@@ -31,7 +31,7 @@ jobs:
         run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
 
   push-to-ecr-staging:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/develop'
     name: Build and Push Docker Image to ECR for Staging
 
@@ -61,7 +61,7 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
   push-to-ecr-production:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     name: Build and Push Docker Image to ECR for Production
 

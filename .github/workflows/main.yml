@@ -10,14 +10,16 @@ on:
       - main
 
 jobs:
- staging-job-1
-    runs-on:self-hosted
-environment: staging
-         if:github.ref == 'refs/heads/develop'
-      steps:
-      - uses: actions/checkout@v3
+  staging-job-1:
+    runs-on: self-hosted
+    environment: staging
+    if: github.ref == 'refs/heads/develop'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Run a one-line script
-        run: "echo Hello, World"
+        run: echo Hello, World
 
       # Push to Docker Hub
       - name: Login to Docker Hub
@@ -27,17 +29,15 @@ environment: staging
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Build docker image
-        run: docker build . -t ${{secrets.DOCKER_USERNAME}}/task1:latest
+        run: docker build . -t ${{ secrets.DOCKER_USERNAME }}/task1:latest
 
       - name: Push docker image to Docker Hub
-        run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/task1:latest
 
-  production-job-1
+  production-job-1:
     runs-on: self-hosted
     environment: production
     if: github.ref == 'refs/heads/develop'
-    name: Build and Push Docker Image to ECR for Staging
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -47,7 +47,7 @@ environment: staging
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -60,7 +60,6 @@ environment: staging
           IMAGE_TAG: latest
         run: 
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y8h2p9f1
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  

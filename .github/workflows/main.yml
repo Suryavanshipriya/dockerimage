@@ -29,7 +29,6 @@ jobs:
 
       - name: Push docker image to Docker Hub
         run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
-
   push-to-ecr-staging:
     runs-on: self-hosted
     environment: staging

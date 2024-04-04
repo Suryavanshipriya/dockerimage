@@ -32,6 +32,7 @@ jobs:
 
   push-to-ecr-staging:
     runs-on: self-hosted
+    environment: staging
     if: github.ref == 'refs/heads/develop'
     name: Build and Push Docker Image to ECR for Staging
 
@@ -62,6 +63,7 @@ jobs:
 
   push-to-ecr-production:
     runs-on: self-hosted
+    environment: production
     if: github.ref == 'refs/heads/main'
     name: Build and Push Docker Image to ECR for Production
 

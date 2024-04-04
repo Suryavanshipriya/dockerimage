@@ -10,9 +10,11 @@ on:
       - main
 
 jobs:
-  push-to-dockerhub:
-    runs-on: self-hosted
-    steps:
+ staging-job-1
+    runs-on:self-hosted
+environment: staging
+         if:github.ref == 'refs/heads/develop'
+      steps:
       - uses: actions/checkout@v3
       - name: Run a one-line script
         run: "echo Hello, World"
@@ -30,9 +32,9 @@ jobs:
       - name: Push docker image to Docker Hub
         run: docker push ${{secrets.DOCKER_USERNAME}}/task1:latest
 
-  push-to-ecr-staging:
+  production-job-1
     runs-on: self-hosted
-    environment: staging
+    environment: production
     if: github.ref == 'refs/heads/develop'
     name: Build and Push Docker Image to ECR for Staging
 
@@ -61,34 +63,4 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-  push-to-ecr-production:
-    runs-on: self-hosted
-    environment: production
-    if: github.ref == 'refs/heads/main'
-    name: Build and Push Docker Image to ECR for Production
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Setup AWS ECR Details
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{secrets.AWS_REGION}}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build and push the tagged docker image to Amazon ECR (Production)
-        env:
-          ECR_REGISTRY: public.ecr.aws/y8h2p9f1 
-          ECR_REPOSITORY: github_actions_priya
-          IMAGE_TAG: latest
-        run: 
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y8h2p9f1
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
+  

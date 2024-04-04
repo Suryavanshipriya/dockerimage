@@ -8,6 +8,7 @@ on:
   pull_request:
     branches:
       - main
+      - develop
 
 jobs:
   push-to-dockerhub:
@@ -52,9 +53,9 @@ jobs:
 
       - name: Build and push the tagged docker image to Amazon ECR (Staging)
         env:
-          ECR_REGISTRY: "public.ecr.aws/y8h2p9f1"
-          ECR_REPOSITORY: "github_actions_priya"
-          IMAGE_TAG: "latest"
+          ECR_REGISTRY: public.ecr.aws/y8h2p9f1
+          ECR_REPOSITORY: github_actions_priya
+          IMAGE_TAG: latest
         run: 
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/y8h2p9f1
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
